@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title></title>
+    <link rel="stylesheet" href="//gaintime.github.io/cdn/3.0.0/css/gaintime.min.css" media ="screen" title="no title">
+  </head>
+  <body>
+    <section>
+      <div class="gt-form medium center">
+        <h1 class="text-center">Pré-processamento da base GoldStandardDataSet.csv</h1>
+        <p>Para adicionar a base de dados original, você pode selecionar o arquivo ou usar o campo de texto para copiar o conteúdo do arquivo. Depois disso, você pode fazer o download da base de dados pré-processada, e no fim dessa página você vai poder ver um rápido resumo dos dados.</p>
+
+        <label for="fileup">Adicione o arquivo GoldStandardDataSet.csv</label>
+        <input id="fileup" class="margin-b" type='file' onchange='openFile(event)' autocomplete="off">
+
+        <label for="input">Preencha este campo com o conteúdo do csv, apenas se não tiver adicionado via arquivo.</label>
+        <textarea id="input" rows="8" cols="80"></textarea>
+        <button id="go" type="button" name="button" class="btn success full">PRÉ-PROCESSAR</button>
+        <a id="link" href="#"><button id="false-btn"  class="btn info full" disabled type="button" name="button">Download CSV</button></a>
+      </div>
+    </section>
+    <section>
+      <h2>Rating among annotators and classes</h2>
+      <table class="gt-table">
+        <thead>
+          <tr>
+            <th>Classes</th>
+            <th>rater-1</th>
+            <th>rater-2</th>
+            <th>rater-3</th>
+          </tr>
+        </thead>
+        <tbody id="evaluation" class="text-center">
+
+        </tbody>
+      </table>
+      <h2>Agreement among the annotators (raters)</h2>
+      <table class="gt-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Tweets</th>
+          </tr>
+        </thead>
+        <tbody id="sentiment" class="text-center">
+
+        </tbody>
+      </table>
+    </section>
+    <footer class="dark">
+      <p>Trabalho de banco de dados para a disciplina MATA60 - DCC - UFBA</p>
+      <p>Alunos:</p>
+      <ul>
+        <li>Arthur Gonçalves</li>
+        <li>João Pedro Rodrigues</li>
+        <li>Neyde Karen</li>
+      </ul>
+    </footer>
+  </body>
+  <script type="text/javascript">
+    var a = "";
+    var nn = 0;
+    var n = 0;
+    var p = 0;
+    var v = [];
+
+    var r1_nn = 0;
+    var r1_n = 0;
+    var r1_p = 0;
+
+    var r2_nn = 0;
+    var r2_n = 0;
+    var r2_p = 0;
+
+    var r3_nn = 0;
+    var r3_n = 0;
+    var r3_p = 0;
+    var unanimous = 0;
+    var two_sentiments = 0;
+    var three_sentiments = 0;
+
+    var csv_content = "";
+    document.getElementById("go").addEventListener("click", function(c) {
+      if (!a) {
+        a = document.getElementById("input").value.toUpperCase();
+      } else {
+        a = a.toUpperCase();
+      }
+      var head = "idTweets,rater-1(annotator-1),rater-2(annotator-2),rater-3(annotator-3),consolidation column".toUpperCase();
+      var tmp = a.replace(head, "");
+      var tmp = tmp.split("\n");
+
+      tmp.forEach(function(x) {
+        v = x.split(',');
+        if (v[1]) {
+          if (v[1] === v[2] && v[1] === v[3]) {
+            unanimous = unanimous + 1;
+          } else if (
+            (v[1] === v[2] && v[1] != v[3]) ||
+            (v[1] === v[3] && v[1] != v[2]) ||
+            (v[2] === v[3] && v[1] != v[2])
+          ){
+            two_sentiments = two_sentiments + 1;
+          } else {
+            three_sentiments = three_sentiments + 1;
+          }
+          switch (v[4]) {
+            case "NN":
+            nn = nn + 1;
+            break;
+            case "N":
+            n = n + 1;
+            break;
+            case "P":
+            p = p + 1;
+            break;
+          }
+          switch (v[1]) {
+            case "NN":
+            r1_nn = r1_nn + 1;
+            break;
+            case "N":
+            r1_n = r1_n + 1;
+            break;
+            case "P":
+            r1_p = r1_p + 1;
+            break;
+          }
+          switch (v[2]) {
+            case "NN":
+            r2_nn = r2_nn + 1;
+            break;
+            case "N":
+            r2_n = r2_n + 1;
+            break;
+            case "P":
+            r2_p = r2_p + 1;
+            break;
+          }
+          switch (v[3]) {
+            case "NN":
+            r3_nn = r3_nn + 1;
+            break;
+            case "N":
+            r3_n = r3_n + 1;
+            break;
+            case "P":
+            r3_p = r3_p + 1;
+            break;
+          }
+
+          csv_content = csv_content + v[1] + "," + v[2] + "," + v[3] + "," + v[4] + "\n";
+        }
+      })
+
+
+      var evaluation = document.getElementById("evaluation");
+      var positive = "<tr><th>Positive</th><td>" + r1_p + "</td><td>" + r2_p + "</td><td>" + r3_p + "</td></tr>";
+      var neutral = "<tr><th>Neutral</th><td>" + r1_nn + "</td><td>" + r2_nn + "</td><td>" + r3_nn + "</td></tr>";
+      var negative = "<tr><th>Negative</th><td>" + r1_n + "</td><td>" + r2_n + "</td><td>" + r3_n + "</td></tr>";
+      evaluation.innerHTML = positive + negative + neutral;
+
+
+      var sentiment = document.getElementById("sentiment");
+
+      sentiment.innerHTML =
+      "<tr><th>Unanimous Sentiment</th><td>" + unanimous + "</td></tr>"+
+      "<tr><th>Two Sentiment</th><td>" + two_sentiments + "</td></tr>"+
+      "<tr><th>Three Sentiment</th><td>" + three_sentiments + "</td></tr>";
+
+      csvData = new Blob([csv_content], { type: 'text/csv' });
+      var csvUrl = URL.createObjectURL(csvData);
+      var link = document.getElementById("link");
+      document.getElementById("false-btn").removeAttribute("disabled");
+      link.href = csvUrl;
+
+    })
+  </script>
+
+  <script>
+    var openFile = function(event) {
+      var input = event.target;
+
+      var reader = new FileReader();
+      reader.onload = function(){
+        a = reader.result;
+      };
+      reader.readAsText(input.files[0]);
+    };
+  </script>
+</html>
