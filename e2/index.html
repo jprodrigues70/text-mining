@@ -11,14 +11,14 @@
     <section>
       <div class="gt-form medium center">
         <h1 class="text-center">Pré-processamento da base GoldStandardDataSet.csv</h1>
-        <p>Para adicionar a base de dados original, você pode selecionar o arquivo ou usar o campo de texto para copiar o conteúdo do arquivo. Depois disso, você pode fazer o download da base de dados pré-processada, e no fim dessa página você vai poder ver um rápido resumo dos dados.</p>
+        <p>Para adicionar a base de dados original, você pode selecionar o arquivo ou usar o campo de texto para copiar o conteúdo do arquivo. Depois disso, você pode fazer o download da base de dados pré-processada, <b>e no fim dessa página você vai poder ver os dados processados</b>.</p>
 
         <label for="fileup">Adicione o arquivo GoldStandardDataSet.csv</label>
         <input id="fileup" class="margin-b" type='file' onchange='openFile(event)' autocomplete="off">
 
         <label for="input">Preencha este campo com o conteúdo do csv, apenas se não tiver adicionado via arquivo.</label>
         <textarea id="input" rows="8" cols="80"></textarea>
-        <button id="go" type="button" name="button" class="btn success full">PRÉ-PROCESSAR</button>
+        <button id="go" type="button" name="button" class="btn success full">PROCESSAR</button>
         <a id="link" href="#"><button id="false-btn"  class="btn info full" disabled type="button" name="button">Download CSV</button></a>
       </div>
     </section>
@@ -52,7 +52,7 @@
     </section>
 
 
-    <section>
+    <section style="overflow: auto">
       <b>Test Item:</b>
       <div id="testingItem"></div>
       <br/>
@@ -64,7 +64,7 @@
       <br/>
       <b>Decision Tree:</b>
       <br/>
-      <div class="tree" id="displayTree"></div>
+      <div class="tree" id="displayTree" style="width: 1000%"></div>
     </section>
 
     <footer class="dark">
@@ -195,7 +195,7 @@
       var decisionTree = new dt.DecisionTree(config);
 
       // Building Random Forest
-      var numberOfTrees = 4;
+      var numberOfTrees = res.length;
       var randomForest = new dt.RandomForest(config, numberOfTrees);
 
       // Testing Decision Tree and Random Forest
@@ -211,11 +211,6 @@
 
       // Displaying Decision Tree
       document.getElementById('displayTree').innerHTML = treeToHtml(decisionTree.root);
-
-
-
-
-
 
       var evaluation = document.getElementById("evaluation");
       var positive = "<tr><th>Positive</th><td>" + r1_p + "</td><td>" + r2_p + "</td><td>" + r3_p + "</td></tr>";
