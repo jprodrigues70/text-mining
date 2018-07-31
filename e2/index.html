@@ -109,16 +109,26 @@
       } else {
         a = a.toUpperCase();
       }
+      
       var head = "idTweets,rater-1(annotator-1),rater-2(annotator-2),rater-3(annotator-3),consolidation column".toUpperCase();
+      
+      //Desconsidera o cabeçalho na contagem dos dados
       var tmp = a.replace(head, "");
+      
+      //Estoura o arquivo de entrada e converte para um vetor
       var tmp = tmp.split("\n");
       console.log(tmp);
+      //Itera sobre as linhas do vetor a fim de identificar os dados.
       tmp.forEach(function(x) {
+        //Converte cada linha do vetor em um novo vetor 
         v = x.split(',');
+        
+        //Mapeia  a linha para um objeto javascript
         obj = { idTweets: v[0], r1: v[1], r2: v[2], r3: v[3], cc: v[4], rs: '' };
 
         if (v[1]) {
           if (v[1] === v[2] && v[1] === v[3]) {
+            // Verifica se os votos dos jurados são iguais
             unanimous = unanimous + 1;
             obj.rs = "unanimous";
           } else if (
@@ -126,14 +136,19 @@
             (v[1] === v[3] && v[1] != v[2]) ||
             (v[2] === v[3] && v[1] != v[2])
           ){
+            //Verifica se cabe a classificação de 2 sentimentos
             two_sentiments = two_sentiments + 1;
             obj.rs = "2 sentiments";
           } else {
+            //Classifica como 1 sentimento
             three_sentiments = three_sentiments + 1;
             obj.rs = "3 sentiments";
           }
+          
+          //Alimenta um array com cada objeto criado para fins de processamento
           res.push(obj);
 
+          //contagem de votos totais
           switch (v[4]) {
             case "NN":
             nn = nn + 1;
@@ -145,6 +160,8 @@
             p = p + 1;
             break;
           }
+          
+          //contagem de voto pro rater 1
           switch (v[1]) {
             case "NN":
             r1_nn = r1_nn + 1;
@@ -156,6 +173,8 @@
             r1_p = r1_p + 1;
             break;
           }
+          
+          //contagem de voto pro rater 2
           switch (v[2]) {
             case "NN":
             r2_nn = r2_nn + 1;
@@ -167,6 +186,8 @@
             r2_p = r2_p + 1;
             break;
           }
+          
+          //contagem de voto pro rater 3
           switch (v[3]) {
             case "NN":
             r3_nn = r3_nn + 1;
@@ -178,13 +199,15 @@
             r3_p = r3_p + 1;
             break;
           }
-
+          
+          //criação do csv de pré-processamento
           csv_content = csv_content + v[1] + "," + v[2] + "," + v[3] + "," + v[4] + "\n";
         }
       })
 
       console.log(res);
 
+      //configura o comportamento do algoritmo de processamento
       var config = {
           trainingSet: res,
           categoryAttr: 'rs',
